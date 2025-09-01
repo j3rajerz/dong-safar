@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <div id="current-date" style="display:none;"></div>
 <title> دنگ سفر قاسم</title>
 
 <!-- فونت و آیکون‌ها -->
@@ -221,17 +220,30 @@
 <body>
     <div class="mobile-container">
 
-        <div id="main-menu">
-            <header>
-    <img src="logo.png" alt="لوگو" style="max-height: 80px; margin-bottom: 10px;">
-    <h1><i class="bi bi-airplane"></i>  دنگ سفر قاسم</h1>
-</header>
-            <button class="menu-button" data-section="passengers"><i class="bi bi-people-fill"></i> مدیریت مسافران</button>
-            <button class="menu-button" data-section="payments"><i class="bi bi-cash-coin"></i> ثبت واریزی‌ها</button>
-            <button class="menu-button" data-section="expenses"><i class="bi bi-cart-check"></i> ثبت خریدها</button>
-            <button class="menu-button" data-section="report"><i class="bi bi-graph-up"></i> مشاهده گزارش</button>
-            <button id="reset-data" class="menu-button"><i class="bi bi-trash"></i> ریست اطلاعات</button>
+    <div id="main-menu">
+    <header>
+        <img src="logo.png" alt="لوگو" style="max-height: 80px; margin-bottom: 10px;">
+        <h1><i class="bi bi-airplane"></i>  دنگ سفر قاسم</h1>
+        <div id="current-date" style="display:none;"></div>
+    </header>
+
+    <div id="dashboard" style="display:flex; justify-content:space-between; width:90%; margin:15px 0;">
+        <div class="card" style="flex:1; margin-left:5px; text-align:center;">
+            <h3>کل واریزی</h3>
+            <p id="total-payments">0</p>
         </div>
+        <div class="card" style="flex:1; margin-right:5px; text-align:center;">
+            <h3>موجودی کلی</h3>
+            <p id="total-balance">0</p>
+        </div>
+    </div>
+
+    <button class="menu-button" data-section="passengers"><i class="bi bi-people-fill"></i> مدیریت مسافران</button>
+    <button class="menu-button" data-section="payments"><i class="bi bi-cash-coin"></i> ثبت واریزی‌ها</button>
+    <button class="menu-button" data-section="expenses"><i class="bi bi-cart-check"></i> ثبت خریدها</button>
+    <button class="menu-button" data-section="report"><i class="bi bi-graph-up"></i> مشاهده گزارش</button>
+    <button id="reset-data" class="menu-button"><i class="bi bi-trash"></i> ریست اطلاعات</button>
+</div>    
 
         <section id="passengers-section" class="content-section">
             <div class="card">
@@ -240,6 +252,14 @@
                     <label for="passenger-name">نام مسافر</label>
                     <input type="text" id="passenger-name" placeholder="نام کامل مسافر">
                 </div>
+                <div class="form-group">
+    <label for="passenger-share">سهم مسافر</label>
+    <select id="passenger-share">
+        <option value="1">تمام سهم</option>
+        <option value="0.5">نصف سهم</option>
+        <option value="0.33">یک‌سوم سهم</option>
+    </select>
+</div>
                 <button id="add-passenger" class="btn-primary"><i class="bi bi-plus-circle"></i> افزودن مسافر</button>
                 <h3 style="margin-top: 20px;">لیست مسافران</h3>
                 <div id="passenger-list"></div>
@@ -319,14 +339,29 @@
                 <h3 class="card-title">جزئیات تراکنش‌ها</h3>
                 <h4>واریزی‌ها</h4>
                 <table id="report-payments-table">
-                    <thead><tr><th>مسافر</th><th>مبلغ</th><th>تاریخ</th></tr></thead>
-                    <tbody></tbody>
-                </table>
-                <h4 style="margin-top: 20px;">خریدها</h4>
-                <table id="report-expenses-table">
-                    <thead><tr><th>خریدار</th><th>مورد</th><th>مبلغ</th><th>تاریخ</th></tr></thead>
-                    <tbody></tbody>
-                </table>
+  <thead>
+    <tr>
+      <th>مسافر</th>
+      <th>مبلغ</th>
+      <th>تاریخ</th>
+      <th>عملیات</th> <!-- ✅ ستون جدید -->
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<table id="report-expenses-table">
+  <thead>
+    <tr>
+      <th>مسافر</th>
+      <th>شرح</th>
+      <th>مبلغ</th>
+      <th>تاریخ</th>
+      <th>عملیات</th> <!-- ✅ ستون جدید -->
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
             </div>
             <div class="card" id="report-summary-card" style="display: none;">
                 <h3 class="card-title">خلاصه گزارش</h3>
@@ -351,22 +386,6 @@
                 mainMenu.style.display = 'flex';
                 window.scrollTo(0, 0);
             }
-            document.getElementById('reset-data').addEventListener('click', () => {
-    if (confirm('آیا مطمئن هستید که می‌خواهید همه اطلاعات (مسافران، واریزی‌ها و خریدها) پاک شوند؟')) {
-        localStorage.removeItem('dong_passengers');
-        localStorage.removeItem('dong_payments');
-        localStorage.removeItem('dong_expenses');
-        passengers = [];
-        payments = [];
-        expenses = [];
-        updatePassengerList();
-        updateAllPassengerDropdowns();
-        updatePaymentTable();
-        updateExpenseList();
-        alert('اطلاعات با موفقیت ریست شد ✅');
-        showMainMenu();
-    }
-});
 
             function showSection(sectionId) {
                 mainMenu.style.display = 'none';
@@ -388,6 +407,14 @@
         initialValue: false
     });
 });
+function updateDashboard() {
+    const totalPayments = payments.reduce((sum, p) => sum + p.amount, 0);
+    const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
+    const balance = totalPayments - totalExpenses;
+
+    document.getElementById('total-payments').textContent = totalPayments.toLocaleString() + " تومان";
+    document.getElementById('total-balance').textContent = balance.toLocaleString() + " تومان";
+}
 
             function toEnglishDigits(str) {
                 if (!str) return '';
@@ -426,74 +453,74 @@
             let expenses = [];
 
             function saveData() {
-                localStorage.setItem('dong_passengers', JSON.stringify(passengers));
-                localStorage.setItem('dong_payments', JSON.stringify(payments));
-                localStorage.setItem('dong_expenses', JSON.stringify(expenses));
-            }
+    localStorage.setItem('dong_passengers', JSON.stringify(passengers));
+    localStorage.setItem('dong_payments', JSON.stringify(payments));
+    localStorage.setItem('dong_expenses', JSON.stringify(expenses));
+    updateDashboard();
+}
 
             function loadData() {
-                passengers = JSON.parse(localStorage.getItem('dong_passengers')) || [];
-                payments = JSON.parse(localStorage.getItem('dong_payments')) || [];
-                expenses = JSON.parse(localStorage.getItem('dong_expenses')) || [];
+    passengers = JSON.parse(localStorage.getItem('dong_passengers')) || [];
+    payments = JSON.parse(localStorage.getItem('dong_payments')) || [];
+    expenses = JSON.parse(localStorage.getItem('dong_expenses')) || [];
 
-                updatePassengerList();
-                updateAllPassengerDropdowns();
-                updatePaymentTable();
-                updateExpenseList();
-            }
+    updatePassengerList();
+    updateAllPassengerDropdowns();
+    updatePaymentTable();
+    updateExpenseList();
+    updateDashboard();   // ✅ اضافه شد
+}
 
             loadData();
 
-            document.getElementById('add-passenger').addEventListener('click', () => {
-                const nameInput = document.getElementById('passenger-name');
-                if (nameInput.value.trim() === '') return alert('نام مسافر را وارد کنید.');
-                passengers.push({ id: Date.now(), name: nameInput.value.trim() });
-                saveData();
-                updatePassengerList();
-                updateAllPassengerDropdowns();
-                nameInput.value = '';
-            });
-
             document.getElementById('add-payment').addEventListener('click', () => {
-                const passengerSelect = document.getElementById('payment-passenger');
-                const amountInput = document.getElementById('payment-amount');
-                const dateInput = document.getElementById('payment-date');
-                const amount = parseInt(toEnglishDigits(amountInput.value));
+    const passengerSelect = document.getElementById('payment-passenger');
+    const amountInput = document.getElementById('payment-amount');
+    const dateInput = document.getElementById('payment-date');
+    const amount = parseInt(toEnglishDigits(amountInput.value));
 
-                if (passengerSelect.value === '' || !amount || amount <= 0 || dateInput.value === '') {
-                    return alert('لطفا مسافر، مبلغ و تاریخ معتبر وارد کنید.');
-                }
-                
-                payments.push({ passengerId: parseInt(passengerSelect.value), amount, date: dateInput.value });
-                saveData();
-                updatePaymentTable();
-                amountInput.value = '';
-                dateInput.value = '';
-            });
+    if (passengerSelect.value === '' || !amount || amount <= 0 || dateInput.value === '') {
+        return alert('لطفا مسافر، مبلغ و تاریخ معتبر وارد کنید.');
+    }
+    
+    payments.push({ 
+        id: Date.now(),   // ✅ شناسه یکتا برای ویرایش/حذف
+        passengerId: parseInt(passengerSelect.value), 
+        amount, 
+        date: dateInput.value 
+    });
+
+    saveData();
+    updatePaymentTable();
+    amountInput.value = '';
+    dateInput.value = '';
+});
 
             document.getElementById('add-expense').addEventListener('click', () => {
-                const passengerSelect = document.getElementById('expense-passenger');
-                const descInput = document.getElementById('expense-desc');
-                const amountInput = document.getElementById('expense-amount');
-                const dateInput = document.getElementById('expense-date');
-                const amount = parseInt(toEnglishDigits(amountInput.value));
+    const passengerSelect = document.getElementById('expense-passenger');
+    const descInput = document.getElementById('expense-desc');
+    const amountInput = document.getElementById('expense-amount');
+    const dateInput = document.getElementById('expense-date');
+    const amount = parseInt(toEnglishDigits(amountInput.value));
 
-                if (passengerSelect.value === '' || descInput.value.trim() === '' || !amount || amount <= 0 || dateInput.value === '') {
-                    return alert('لطفا خریدار، توضیح، مبلغ و تاریخ معتبر را وارد کنید.');
-                }
+    if (passengerSelect.value === '' || descInput.value.trim() === '' || !amount || amount <= 0 || dateInput.value === '') {
+        return alert('لطفا خریدار، توضیح، مبلغ و تاریخ معتبر را وارد کنید.');
+    }
 
-                expenses.push({ 
-                    passengerId: parseInt(passengerSelect.value),
-                    description: descInput.value.trim(), 
-                    amount, 
-                    date: dateInput.value 
-                });
-                saveData();
-                updateExpenseList();
-                descInput.value = '';
-                amountInput.value = '';
-                dateInput.value = '';
-            });
+    expenses.push({ 
+        id: Date.now(),   // ✅ شناسه یکتا برای ویرایش/حذف
+        passengerId: parseInt(passengerSelect.value),
+        description: descInput.value.trim(), 
+        amount, 
+        date: dateInput.value 
+    });
+
+    saveData();
+    updateExpenseList();
+    descInput.value = '';
+    amountInput.value = '';
+    dateInput.value = '';
+});
 
             function updatePassengerList() {
                 const list = document.getElementById('passenger-list');
@@ -550,69 +577,160 @@
                     list.appendChild(item);
                 });
             }
+            document.getElementById('add-passenger').addEventListener('click', () => {
+    const nameInput = document.getElementById('passenger-name');
+    const shareSelect = document.getElementById('passenger-share');
+    if (nameInput.value.trim() === '') return alert('نام مسافر را وارد کنید.');
+    passengers.push({ 
+        id: Date.now(), 
+        name: nameInput.value.trim(),
+        share: parseFloat(shareSelect.value) || 1
+    });
+    saveData();
+    updatePassengerList();
+    updateAllPassengerDropdowns();
+    nameInput.value = '';
+    shareSelect.value = '1';
+});
+});
+document.getElementById('generate-report-btn').addEventListener('click', () => {
+    const passengerFilter = document.getElementById('report-passenger-filter').value;
+    const startDateFilter = document.getElementById('report-date-filter-start').value;
+    const endDateFilter = document.getElementById('report-date-filter-end').value;
 
-            document.getElementById('generate-report-btn').addEventListener('click', () => {
-                const passengerFilter = document.getElementById('report-passenger-filter').value;
-                const startDateFilter = document.getElementById('report-date-filter-start').value;
-                const endDateFilter = document.getElementById('report-date-filter-end').value;
+    // فیلتر واریزی‌ها
+    let filteredPayments = payments.filter(p => 
+        (passengerFilter === 'all' || p.passengerId == passengerFilter) &&
+        (startDateFilter === '' || p.date >= startDateFilter) &&
+        (endDateFilter === '' || p.date <= endDateFilter)
+    );
 
-                let filteredPayments = payments.filter(p => 
-                    (passengerFilter === 'all' || p.passengerId == passengerFilter) &&
-                    (startDateFilter === '' || p.date >= startDateFilter) &&
-                    (endDateFilter === '' || p.date <= endDateFilter)
-                );
+    // فیلتر خریدها
+    let filteredExpenses = expenses.filter(e => 
+        (passengerFilter === 'all' || e.passengerId == passengerFilter) &&
+        (startDateFilter === '' || e.date >= startDateFilter) &&
+        (endDateFilter === '' || e.date <= endDateFilter)
+    );
 
-                let filteredExpenses = expenses.filter(e => 
-                    (passengerFilter === 'all' || e.passengerId == passengerFilter) &&
-                    (startDateFilter === '' || e.date >= startDateFilter) &&
-                    (endDateFilter === '' || e.date <= endDateFilter)
-                );
+    // جدول واریزی‌ها
+    const detailsCard = document.getElementById('report-details-card');
+    const paymentsTbody = document.getElementById('report-payments-table').querySelector('tbody');
+    paymentsTbody.innerHTML = '';
+    filteredPayments.forEach(p => {
+        const passenger = passengers.find(ps => ps.id === p.passengerId);
+        const row = paymentsTbody.insertRow();
+        row.innerHTML = `
+            <td>${passenger ? passenger.name : 'نامشخص'}</td>
+            <td>${p.amount.toLocaleString()}</td>
+            <td>${p.date}</td>
+            <td>
+                <button class="edit-payment" data-id="${p.id}">✏️</button>
+                <button class="delete-payment" data-id="${p.id}">🗑</button>
+            </td>
+        `;
+    });
 
-                const detailsCard = document.getElementById('report-details-card');
-                const paymentsTbody = document.getElementById('report-payments-table').querySelector('tbody');
-                paymentsTbody.innerHTML = '';
-                filteredPayments.forEach(p => {
-                    const passenger = passengers.find(ps => ps.id === p.passengerId);
-                    paymentsTbody.insertRow().innerHTML = `<td>${passenger.name}</td><td>${p.amount.toLocaleString()}</td><td>${p.date}</td>`;
-                });
+    // جدول خریدها
+    const expensesTbody = document.getElementById('report-expenses-table').querySelector('tbody');
+    expensesTbody.innerHTML = '';
+    filteredExpenses.forEach(e => {
+        const passenger = passengers.find(ps => ps.id === e.passengerId);
+        const row = expensesTbody.insertRow();
+        row.innerHTML = `
+            <td>${passenger ? passenger.name : 'نامشخص'}</td>
+            <td>${e.description}</td>
+            <td>${e.amount.toLocaleString()}</td>
+            <td>${e.date}</td>
+            <td>
+                <button class="edit-expense" data-id="${e.id}">✏️</button>
+                <button class="delete-expense" data-id="${e.id}">🗑</button>
+            </td>
+        `;
+    });
+    detailsCard.style.display = 'block';
 
-                const expensesTbody = document.getElementById('report-expenses-table').querySelector('tbody');
-                expensesTbody.innerHTML = '';
-                filteredExpenses.forEach(e => {
-                    const passenger = passengers.find(ps => ps.id === e.passengerId);
-                    expensesTbody.insertRow().innerHTML = `<td>${passenger.name}</td><td>${e.description}</td><td>${e.amount.toLocaleString()}</td><td>${e.date}</td>`;
-                });
-                detailsCard.style.display = 'block';
+    // کارت خلاصه
+    const summaryCard = document.getElementById('report-summary-card');
+    const summaryTbody = document.getElementById('report-summary-table').querySelector('tbody');
+    summaryTbody.innerHTML = '';
 
-                const summaryCard = document.getElementById('report-summary-card');
-                const summaryTbody = document.getElementById('report-summary-table').querySelector('tbody');
-                summaryTbody.innerHTML = '';
-                
-                const totalExpenses = filteredExpenses.reduce((sum, e) => sum + e.amount, 0);
-                const activePassengers = (passengerFilter === 'all') ? passengers : passengers.filter(p => p.id == passengerFilter);
-                
-                if (activePassengers.length === 0) {
-                    summaryCard.style.display = 'none';
-                    return;
-                }
-                
-                const sharePerPassenger = totalExpenses / activePassengers.length;
+    const totalExpenses = filteredExpenses.reduce((sum, e) => sum + e.amount, 0);
+    const activePassengers = (passengerFilter === 'all') ? passengers : passengers.filter(p => p.id == passengerFilter);
 
-                activePassengers.forEach(passenger => {
-                    const totalPayment = filteredPayments
-                        .filter(p => p.passengerId === passenger.id)
-                        .reduce((sum, p) => sum + p.amount, 0);
-                    const balance = totalPayment - sharePerPassenger;
-                    summaryTbody.insertRow().innerHTML = `
-                        <td>${passenger.name}</td>
-                        <td>${totalPayment.toLocaleString()}</td>
-                        <td>${Math.round(sharePerPassenger).toLocaleString()}</td>
-                        <td class="${balance >= 0 ? 'positive' : 'negative'}">${Math.round(balance).toLocaleString()}</td>
-                    `;
-                });
-                summaryCard.style.display = 'block';
-            });
+    if (activePassengers.length === 0) {
+        summaryCard.style.display = 'none';
+        return;
+    }
+
+    // محاسبه مجموع سهم‌ها
+    const totalShares = activePassengers.reduce((sum, p) => sum + (p.share || 1), 0);
+
+    // محاسبه سهم هر مسافر
+    activePassengers.forEach(passenger => {
+        const passengerShare = (passenger.share || 1) / totalShares;  
+        const costForPassenger = totalExpenses * passengerShare;
+
+        const totalPayment = filteredPayments
+            .filter(p => p.passengerId === passenger.id)
+            .reduce((sum, p) => sum + p.amount, 0);
+
+        const balance = totalPayment - costForPassenger;
+
+        summaryTbody.insertRow().innerHTML = `
+            <td>${passenger.name}</td>
+            <td>${totalPayment.toLocaleString()}</td>
+            <td>${Math.round(costForPassenger).toLocaleString()}</td>
+            <td class="${balance >= 0 ? 'positive' : 'negative'}">${Math.round(balance).toLocaleString()}</td>
+        `;
+    });
+
+    summaryCard.style.display = 'block';
+
+    // 🎯 دکمه‌های حذف
+    document.querySelectorAll('.delete-payment').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const id = btn.getAttribute('data-id');
+            payments = payments.filter(p => p.id != id);
+            saveData();
+            document.getElementById('generate-report-btn').click();
         });
-    </script>
+    });
+    document.querySelectorAll('.delete-expense').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const id = btn.getAttribute('data-id');
+            expenses = expenses.filter(e => e.id != id);
+            saveData();
+            document.getElementById('generate-report-btn').click();
+        });
+    });
+});
+// ریست اطلاعات
+document.getElementById('reset-data').addEventListener('click', () => {
+    if (confirm('آیا مطمئن هستید که می‌خواهید همه اطلاعات (مسافران، واریزی‌ها و خریدها) پاک شوند؟')) {
+        // پاک کردن کامل داده‌ها
+        localStorage.removeItem('dong_passengers');
+        localStorage.removeItem('dong_payments');
+        localStorage.removeItem('dong_expenses');
+
+        // پاک کردن داده‌های داخل حافظه
+        passengers = [];
+        payments = [];
+        expenses = [];
+
+        // آپدیت کردن رابط کاربری
+        updatePassengerList();
+        updateAllPassengerDropdowns();
+        updatePaymentTable();
+        updateExpenseList();
+        updateDashboard();
+
+        alert('✅ اطلاعات با موفقیت ریست شد');
+
+        // برگشت به منوی اصلی
+        document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
+        document.getElementById('main-menu').style.display = 'flex';
+    }
+});   // ← این بسته‌کننده تابع گزارش بود
+</script>
 </body>
 </html>
