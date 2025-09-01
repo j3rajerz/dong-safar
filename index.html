@@ -230,6 +230,7 @@
             <button class="menu-button" data-section="payments"><i class="bi bi-cash-coin"></i> ثبت واریزی‌ها</button>
             <button class="menu-button" data-section="expenses"><i class="bi bi-cart-check"></i> ثبت خریدها</button>
             <button class="menu-button" data-section="report"><i class="bi bi-graph-up"></i> مشاهده گزارش</button>
+            <button id="reset-data" class="menu-button"><i class="bi bi-trash"></i> ریست اطلاعات</button>
         </div>
 
         <section id="passengers-section" class="content-section">
@@ -350,6 +351,22 @@
                 mainMenu.style.display = 'flex';
                 window.scrollTo(0, 0);
             }
+            document.getElementById('reset-data').addEventListener('click', () => {
+    if (confirm('آیا مطمئن هستید که می‌خواهید همه اطلاعات (مسافران، واریزی‌ها و خریدها) پاک شوند؟')) {
+        localStorage.removeItem('dong_passengers');
+        localStorage.removeItem('dong_payments');
+        localStorage.removeItem('dong_expenses');
+        passengers = [];
+        payments = [];
+        expenses = [];
+        updatePassengerList();
+        updateAllPassengerDropdowns();
+        updatePaymentTable();
+        updateExpenseList();
+        alert('اطلاعات با موفقیت ریست شد ✅');
+        showMainMenu();
+    }
+});
 
             function showSection(sectionId) {
                 mainMenu.style.display = 'none';
