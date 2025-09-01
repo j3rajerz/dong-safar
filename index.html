@@ -2,15 +2,23 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مدیریت دنگ سفر</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@vazirmatn/matn@3.0.5/Vazirmatn-font-face.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="https://unpkg.com/persian-datepicker@1.2.0/dist/css/persian-datepicker.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/jalaali-js@1.1.0/lib/jalaali-js.min.js"></script>
-    <script src="https://unpkg.com/jquery@3.5.1/dist/jquery.min.js"></script>
-    <script src="https://unpkg.com/persian-datepicker@1.2.0/dist/js/persian-datepicker.min.js"></script>
-    <style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title> دنگ سفر قاسم</title>
+
+<!-- فونت و آیکون‌ها -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@vazirmatn/matn@3.0.5/Vazirmatn-font-face.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+<!-- استایل تقویم شمسی -->
+<link rel="stylesheet" href="https://unpkg.com/persian-datepicker@1.2.0/dist/css/persian-datepicker.min.css">
+
+<!-- کتابخانه‌ها -->
+<script src="https://unpkg.com/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="https://unpkg.com/persian-date/dist/persian-date.min.js"></script>
+<script src="https://unpkg.com/persian-datepicker@1.2.0/dist/js/persian-datepicker.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jalaali-js@1.1.0/lib/jalaali-js.min.js"></script>
+
+<style>
         :root {
             --bg-primary: #0A0A0A;
             --bg-secondary: #1E1E1E;
@@ -214,9 +222,10 @@
 
         <div id="main-menu">
             <header>
-                <h1><i class="bi bi-airplane"></i> مدیریت دنگ سفر</h1>
-                <div class="date-display" id="current-date"></div>
-            </header>
+    <img src="logo.png" alt="لوگو" style="max-height: 80px; margin-bottom: 10px;">
+    <h1><i class="bi bi-airplane"></i>  دنگ سفر قاسم</h1>
+    <div class="date-display" id="current-date"></div>
+</header>
             <button class="menu-button" data-section="passengers"><i class="bi bi-people-fill"></i> مدیریت مسافران</button>
             <button class="menu-button" data-section="payments"><i class="bi bi-cash-coin"></i> ثبت واریزی‌ها</button>
             <button class="menu-button" data-section="expenses"><i class="bi bi-cart-check"></i> ثبت خریدها</button>
@@ -375,16 +384,22 @@
             }
 
             function updatePersianDate() {
-                try {
-                    const now = new Date();
-                    const jalaaliDate = jalaali.toJalaali(now);
-                    const months = ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'];
-                    const days = ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه'];
-                    document.getElementById('current-date').textContent = `امروز: ${days[now.getDay()]}، ${jalaaliDate.jd} ${months[jalaaliDate.jm - 1]} ${jalaaliDate.jy}`;
-                } catch (e) {
-                    document.getElementById('current-date').textContent = "خطا در نمایش تاریخ";
-                }
-            }
+    try {
+        const pd = new persianDate();
+        const days = ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه'];
+        const months = ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'];
+
+        const dayName = days[pd.day()];
+        const day = pd.date();
+        const monthName = months[pd.month() - 1];
+        const year = pd.year();
+
+        document.getElementById('current-date').textContent =
+          `امروز: ${dayName}، ${day} ${monthName} ${year}`;
+    } catch (e) {
+        document.getElementById('current-date').textContent = "خطا در نمایش تاریخ";
+    }
+}
             updatePersianDate();
 
             let passengers = [];
