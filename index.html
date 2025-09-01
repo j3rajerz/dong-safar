@@ -224,7 +224,6 @@
             <header>
     <img src="logo.png" alt="لوگو" style="max-height: 80px; margin-bottom: 10px;">
     <h1><i class="bi bi-airplane"></i>  دنگ سفر قاسم</h1>
-    <div class="date-display" id="current-date"></div>
 </header>
             <button class="menu-button" data-section="passengers"><i class="bi bi-people-fill"></i> مدیریت مسافران</button>
             <button class="menu-button" data-section="payments"><i class="bi bi-cash-coin"></i> ثبت واریزی‌ها</button>
@@ -386,11 +385,11 @@
             function updatePersianDate() {
     try {
         const pd = new persianDate();
-        const days = ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه'];
+        const days = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه'];
         const months = ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'];
 
-        const dayName = days[pd.day()];
-        const day = pd.date();
+        const dayName = days[pd.day()];   // ← روز هفته‌ی شمسی
+        const day = pd.date();            // روز ماه
         const monthName = months[pd.month() - 1];
         const year = pd.year();
 
@@ -400,6 +399,8 @@
         document.getElementById('current-date').textContent = "خطا در نمایش تاریخ";
     }
 }
+
+
             updatePersianDate();
 
             let passengers = [];
